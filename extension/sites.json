@@ -1,0 +1,17 @@
+{
+  "portal.azure.com": {
+    "label": "Azure Portal",
+    "health_cookies": ["ESTSAUTH", "ESTSAUTHPERSISTENT"],
+    "include_cookies": []
+  },
+  "github.com": {
+    "label": "GitHub",
+    "health_cookies": ["user_session", "__Host-user_session_same_site"],
+    "include_cookies": []
+  },
+  "app.datadoghq.com": {
+    "label": "Datadog",
+    "health_cookies": ["DD_S"],
+    "include_cookies": []
+  }
+}

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie-Monster</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #161820;
+      --border:    #252830;
+      --accent:    #f5a623;
+      --accent2:   #e8891a;
+      --green:     #4ade80;
+      --red:       #f87171;
+      --blue:      #60a5fa;
+      --muted:     #4a4f5e;
+      --text:      #e2e4ec;
+      --text-dim:  #7a7f90;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 420px;
+      min-height: 200px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 12px;
+      overflow: hidden;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .title {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 13px;
+      color: #5ab4ff;
+      letter-spacing: 0.04em;
+    }
+
+    .version {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-left: 2px;
+    }
+
+    .spacer { flex: 1; }
+
+    .header-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 3px 7px;
+      font-size: 10px;
+      font-family: var(--sans);
+      transition: all 0.15s;
+    }
+    .header-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── Domain bar ──────────────────────────────────── */
+    .domain-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .status-dot.live { background: var(--green); box-shadow: 0 0 5px var(--green); }
+    .status-dot.warn { background: var(--accent); box-shadow: 0 0 5px var(--accent); }
+
+    .domain-text {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--blue);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .cookie-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* ── Session health ──────────────────────────────── */
+    .health-bar {
+      display: flex;
+      gap: 5px;
+      padding: 7px 14px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .health-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-family: var(--mono);
+      font-size: 10px;
+      border: 1px solid transparent;
+    }
+    .health-chip.found {
+      background: rgba(74, 222, 128, 0.08);
+      border-color: rgba(74, 222, 128, 0.25);
+      color: var(--green);
+    }
+    .health-chip.missing {
+      background: rgba(248, 113, 113, 0.06);
+      border-color: rgba(248, 113, 113, 0.2);
+      color: var(--red);
+      opacity: 0.7;
+    }
+    .health-chip::before {
+      content: '✓';
+      font-size: 9px;
+    }
+    .health-chip.missing::before { content: '✗'; }
+
+    /* ── Cookie header output ────────────────────────── */
+    .output-section {
+      padding: 10px 14px 6px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+    }
+
+    .cookie-header-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text);
+      line-height: 1.5;
+      word-break: break-all;
+      max-height: 80px;
+      overflow-y: auto;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .cookie-header-box:hover {
+      border-color: var(--muted);
+    }
+    .cookie-header-box.flash {
+      border-color: var(--green);
+      background: rgba(74, 222, 128, 0.05);
+    }
+
+    .cookie-key-name {
+      color: var(--accent);
+    }
+
+    /* ── Action buttons ──────────────────────────────── */
+    .actions {
+      display: flex;
+      gap: 6px;
+      padding: 8px 14px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 7px 10px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0d0f14;
+    }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary.copied {
+      background: var(--green);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    .btn-secondary:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+
+    .btn-agent {
+      background: rgba(74, 222, 128, 0.08);
+      border: 1px solid rgba(74, 222, 128, 0.28);
+      color: var(--green);
+    }
+    .btn-agent:hover {
+      background: rgba(74, 222, 128, 0.16);
+      border-color: rgba(74, 222, 128, 0.55);
+    }
+    .btn-agent:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .btn-agent.sending { opacity: 0.65; }
+    .btn-agent.sent {
+      background: rgba(74, 222, 128, 0.18);
+      border-color: var(--green);
+    }
+    .btn-agent.error {
+      background: rgba(248, 113, 113, 0.08);
+      border-color: rgba(248, 113, 113, 0.35);
+      color: var(--red);
+    }
+
+    /* ── Cookie list ─────────────────────────────────── */
+    .cookie-list-section {
+      padding: 0 14px 6px;
+    }
+
+    .toggle-list {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text-dim);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 0;
+    }
+    .toggle-list:hover { color: var(--text); }
+    .toggle-arrow {
+      font-size: 9px;
+      transition: transform 0.2s;
+    }
+    .toggle-arrow.open { transform: rotate(90deg); }
+
+    .cookie-list {
+      display: none;
+      flex-direction: column;
+      gap: 1px;
+      margin-top: 4px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+    .cookie-list.open { display: flex; }
+
+    .cookie-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 3px;
+      background: var(--surface);
+      border: 1px solid transparent;
+    }
+    .cookie-row.key-cookie {
+      border-color: rgba(245, 166, 35, 0.2);
+    }
+    .cookie-row:hover {
+      border-color: var(--border);
+    }
+
+    .cookie-row-name {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+      min-width: 120px;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .cookie-row.key-cookie .cookie-row-name {
+      color: var(--accent);
+    }
+    .cookie-row:not(.key-cookie) .cookie-row-name {
+      color: var(--blue);
+    }
+
+    .cookie-row-value {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .key-badge {
+      font-size: 9px;
+      padding: 1px 4px;
+      background: rgba(245, 166, 35, 0.15);
+      color: var(--accent);
+      border-radius: 2px;
+      flex-shrink: 0;
+      font-family: var(--mono);
+    }
+
+    /* ── Timestamp & footer ──────────────────────────── */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 14px 10px;
+      border-top: 1px solid var(--border);
+      margin-top: 2px;
+    }
+
+    .timestamp {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+    .timestamp span { color: var(--text-dim); }
+
+    .refresh-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 2px 4px;
+      transition: color 0.15s, transform 0.3s;
+      line-height: 1;
+    }
+    .refresh-btn:hover { color: var(--text); }
+    .refresh-btn.spinning { animation: spin 0.5s linear; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error / empty states ────────────────────────── */
+    .state-message {
+      padding: 24px 14px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .state-message .icon { font-size: 22px; margin-bottom: 8px; display: block; }
+    .state-message strong { color: var(--text); display: block; margin-bottom: 4px; }
+
+    /* ── Scrollbar ───────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* ── History panel ───────────────────────────────── */
+    .history-panel {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+    }
+    .history-panel.open { display: flex; }
+    .history-item {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .history-item:hover { background: var(--surface); }
+    .history-domain {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--blue);
+      margin-bottom: 2px;
+    }
+    .history-meta {
+      font-size: 10px;
+      color: var(--muted);
+      display: flex;
+      gap: 8px;
+    }
+    .history-empty {
+      padding: 16px 14px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div id="main-view">
+    <div class="header">
+      <img class="logo" src="icons/icon32.png" alt="">
+      <span class="title">Cookie-Monster</span>
+      <span class="version">v0.1</span>
+      <div class="spacer"></div>
+      <button class="header-btn" id="history-btn">History</button>
+    </div>
+
+    <div id="loading" class="state-message" style="padding:20px 14px">
+      <span class="icon">⏳</span>
+      <strong>Loading...</strong>
+      Reading cookies for this tab
+    </div>
+
+    <div id="error-state" class="state-message" style="display:none">
+      <span class="icon">⚠️</span>
+      <strong id="error-title">No cookies found</strong>
+      <span id="error-msg">Navigate to an authenticated page, then click the extension icon.</span>
+    </div>
+
+    <div id="content" style="display:none">
+      <div class="domain-bar">
+        <div class="status-dot" id="status-dot"></div>
+        <span class="domain-text" id="domain-text"></span>
+        <span class="cookie-count" id="cookie-count"></span>
+      </div>
+
+      <div class="health-bar" id="health-bar"></div>
+
+      <div class="output-section">
+        <div class="section-label">Cookie Header</div>
+        <div class="cookie-header-box" id="cookie-header-box"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="copy-btn">⎘ Copy Header</button>
+        <button class="btn btn-secondary" id="copy-curl-btn">curl -H</button>
+        <button class="btn btn-secondary" id="copy-env-btn">.env</button>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-agent" id="agent-btn">→ Send to Agent</button>
+      </div>
+
+      <div class="cookie-list-section">
+        <div class="toggle-list" id="toggle-list">
+          <span class="toggle-arrow" id="toggle-arrow">▶</span>
+          <span id="toggle-label">Show all cookies</span>
+        </div>
+        <div class="cookie-list" id="cookie-list"></div>
+      </div>
+
+      <div class="footer">
+        <span class="timestamp">captured <span id="timestamp">—</span></span>
+        <button class="refresh-btn" id="refresh-btn" title="Re-capture">↺</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History panel -->
+  <div id="history-view" style="display:none">
+    <div class="header">
+      <span class="title">History</span>
+      <div class="spacer"></div>
+      <button class="header-btn" id="back-btn">← Back</button>
+      <button class="header-btn" id="clear-history-btn" style="margin-left:4px">Clear</button>
+    </div>
+    <div class="history-panel open" id="history-list"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

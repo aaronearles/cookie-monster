@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Cookie-Monster",
+  "version": "0.1.0",
+  "description": "One-click capture of session cookies to your local filesystem - for CLI tools, curl, and Claude Code.",
+
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArqkzjo0ZzE/zDDytzvAqv810TuAuTPCiFpY+nVyGCgKC/QQ3KxbTg56cVuRrPa6KxPBFa2r0FBvRP2KH+N3bl5nfjU3rXo1fff4ZmyI8KasrEUFlK18tuy+QdDA9ZOladBvjFKyv0p/sAyVVDZjq5mkheupisqGcEEYNOmwlDxuxgDAHtnzkVv5nb4xLuliaKW9wZOEVDEQpIY8YEx4qdMIGGr1qCDIY/EtMQiXzSQ5Q3aw7yiDLn/T2sYZ9d2i/G36FyD8Q4YxA9nRL0ALi5gxBIcY4QWvXtex1dL2EOPjofa9qcFtmCARprIsBkHZ4SdD/7IU9IVVYS/McVk9WSQIDAQAB",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "cookie-monster@cookiemonster.com",
+      "strict_min_version": "128.0"
+    }
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Cookie-Monster",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "cookies",
+    "activeTab",
+    "clipboardWrite",
+    "storage",
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

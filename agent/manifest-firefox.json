@@ -1,0 +1,9 @@
+{
+  "name": "com.cookiemonster.agent",
+  "description": "Cookie-Monster local agent",
+  "path": "PLACEHOLDER_REWRITTEN_BY_INSTALL_PS1",
+  "type": "stdio",
+  "allowed_origins": [
+    "moz-extension://cookie-monster@cookiemonster.com/"
+  ]
+}
