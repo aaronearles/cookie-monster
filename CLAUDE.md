@@ -89,7 +89,7 @@ system, and history panel are all carried forward. New additions are:
 |-------|-------|
 | Native messaging host name | `com.cookiemonster.agent` |
 | Firefox gecko.id | `cookie-monster@cookiemonster.com` |
-| Chrome extension ID | `fphbpongnohaamccgpafdbamkibbjnek` — derived from `extension/cookie-monster.pem` (key is in manifest-chrome.json) |
+| Chrome extension ID | `fphbpongnohaamccgpafdbamkibbjnek` — derived from `cookie-monster.pem` (project root, gitignored; public key embedded in manifest.json `key` field) |
 | Cookie store (Windows) | `%USERPROFILE%\.session-cookies\{hostname}.env` |
 | Cookie store (WSL) | `/mnt/c/Users/{user}/.session-cookies/{hostname}.env` |
 | User override config | `%USERPROFILE%\.cookie-monster\sites.json` |
